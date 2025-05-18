@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Screener</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="logo">Financial Screener</h1>
+                    <nav class="main-nav">
+                        <button class="nav-button" data-section="trading-performance">Trading Performance</button>
+                        <button class="nav-button" data-section="crypto">Crypto</button>
+                        <button class="nav-button active" data-section="stocks">Stocks</button>
+                        <button class="nav-button" data-section="account">Account</button>
+                    </nav>
+                </div>
+                <div class="header-right">
+                    <div class="broker-select">
+                        <select id="broker-select">
+                            <option value="none">Select Broker</option>
+                            <option value="m1finance">M1 Finance</option>
+                            <option value="robinhood">Robinhood</option>
+                            <option value="webull">Webull</option>
+                            <option value="coinbase">Coinbase (Crypto)</option>
+                            <option value="binance">Binance (Crypto)</option>
+                        </select>
+                    </div>
+                    <div class="asset-type-toggle">
+                        <button class="asset-button active" data-asset-type="stocks">Stocks</button>
+                        <button class="asset-button" data-asset-type="crypto">Crypto</button>
+                    </div>
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="search" class="search-input" placeholder="Search ticker...">
+                    </div>
+                    <button class="icon-button" id="notifications-button">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <button class="icon-button" id="favorites-button">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <button class="icon-button" id="account-button">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="icon-button" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Market Overview -->
+        <section class="market-overview">
+            <div class="market-cards">
+                <div class="market-card">
+                    <div class="market-card-header">
+                        <span class="market-name">DOW</span>
+                        <div class="market-price">
+                            <div class="price-value">40,356.47</div>
+                            <div class="price-change negative">-389.83 (-0.95%)</div>
+                        </div>
+                    </div>
+                    <div class="market-chart">
+                        <canvas id="dow-chart"></canvas>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-card-header">
+                        <span class="market-name">NASDAQ</span>
+                        <div class="market-price">
+                            <div class="price-value">17,683.91</div>
+                            <div class="price-change negative">-154.58 (-0.87%)</div>
+                        </div>
+                    </div>
+                    <div class="market-chart">
+                        <canvas id="nasdaq-chart"></canvas>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-card-header">
+                        <span class="market-name">S&P 500</span>
+                        <div class="market-price">
+                            <div class="price-value">5,296.71</div>
+                            <div class="price-change negative">-43.47 (-0.77%)</div>
+                        </div>
+                    </div>
+                    <div class="market-chart">
+                        <canvas id="sp-chart"></canvas>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-card-header">
+                        <span class="market-name">RUSSELL 2000</span>
+                        <div class="market-price">
+                            <div class="price-value">2,092.74</div>
+                            <div class="price-change negative">-2.17 (-0.09%)</div>
+                        </div>
+                    </div>
+                    <div class="market-chart">
+                        <canvas id="russell-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Trading Performance Section -->
+            <section id="trading-performance" class="content-section">
+                <div id="performance-market-selection" class="market-selection-container">
+                    <h2>Select Market for Trading Performance</h2>
+                    <div class="market-selection-buttons">
+                        <button class="button-primary market-selection-button" data-market-type="Crypto">Crypto</button>
+                        <button class="button-primary market-selection-button" data-market-type="Stocks">Stocks</button>
+                    </div>
+                </div>
+                
+                <div id="performance-content" style="display: none;">
+                    <div class="section-header">
+                        <h2 id="performance-title">Trading Performance</h2>
+                        <div class="filter-controls">
+                            <select id="performance-period">
+                                <option value="all">All Time</option>
+                                <option value="ytd">Year to Date</option>
+                                <option value="1m">Last Month</option>
+                                <option value="3m">Last 3 Months</option>
+                                <option value="6m">Last 6 Months</option>
+                                <option value="1y">Last Year</option>
+                            </select>
+                            <select id="performance-asset-type">
+                                <option value="all">All Assets</option>
+                                <option value="stocks">Stocks Only</option>
+                                <option value="crypto">Crypto Only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="performance-metrics">
+                        <div class="metric-card">
+                            <div class="metric-label">P/L ($)</div>
+                            <div class="metric-value positive">+$1,245.67</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">P/L (%)</div>
+                            <div class="metric-value positive">+12.4%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value">68%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Risk/Reward</div>
+                            <div class="metric-value">1:2.5</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Avg Hold Time</div>
+                            <div class="metric-value">3.2 days</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Position Size</div>
+                            <div class="metric-value">$5,000</div>
+                        </div>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>Equity Curve</h3>
+                            <div class="chart-placeholder large-chart">
+                                <canvas id="equity-curve-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Win/Loss Distribution</h3>
+                            <div class="chart-placeholder large-chart">
+                                <canvas id="win-loss-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- New Analysis Tabs -->
+                    <div class="analysis-tabs filter-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="trades">Trades</button>
+                            <button class="tab-button" data-tab="entry-exit">Entry/Exit Reasons</button>
+                            <button class="tab-button" data-tab="setup">Setup Type/Strategy</button>
+                            <button class="tab-button" data-tab="mistakes">Mistakes</button>
+                            <button class="tab-button" data-tab="market-condition">Market Condition</button>
+                        </div>
+                        
+                        <!-- Trades Tab -->
+                        <div class="tab-content active" id="trades-tab">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Date <i class="fas fa-sort"></i></th>
+                                            <th>Asset <i class="fas fa-sort"></i></th>
+                                            <th>Type <i class="fas fa-sort"></i></th>
+                                            <th>Entry <i class="fas fa-sort"></i></th>
+                                            <th>Exit <i class="fas fa-sort"></i></th>
+                                            <th class="text-right">P/L <i class="fas fa-sort"></i></th>
+                                            <th>Hold Time <i class="fas fa-sort"></i></th>
+                                            <th>Strategy <i class="fas fa-sort"></i></th>
+                                            <th>Entry/Exit Reason <i class="fas fa-sort"></i></th>
+                                            <th>Mistakes <i class="fas fa-sort"></i></th>
+                                            <th>Market Condition <i class="fas fa-sort"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2023-04-15</td>
+                                            <td>AAPL</td>
+                                            <td>Long</td>
+                                            <td>$165.23</td>
+                                            <td>$178.45</td>
+                                            <td class="text-right positive">+$1,322</td>
+                                            <td>5 days</td>
+                                            <td>Breakout</td>
+                                            <td>Earnings beat</td>
+                                            <td>No</td>
+                                            <td>Bullish</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-04-10</td>
+                                            <td>MSFT</td>
+                                            <td>Long</td>
+                                            <td>$285.76</td>
+                                            <td>$290.12</td>
+                                            <td class="text-right positive">+$436</td>
+                                            <td>2 days</td>
+                                            <td>Momentum</td>
+                                            <td>Sector rotation</td>
+                                            <td>No</td>
+                                            <td>Bullish</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2023-04-05</td>
+                                            <td>TSLA</td>
+                                            <td>Short</td>
+                                            <td>$195.30</td>
+                                            <td>$180.54</td>
+                                            <td class="text-right positive">+$1,476</td>
+                                            <td>3 days</td>
+                                            <td>Reversal</td>
+                                            <td>Overbought</td>
+                                            <td>Yes</td>
+                                            <td>Bearish</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Entry/Exit Reasons Tab -->
+                        <div class="tab-content" id="entry-exit-tab">
+                            <div class="section-header">
+                                <h3>Entry/Exit Reasons</h3>
+                                <button class="button-primary" id="add-entry-exit-button">Add Entry/Exit Reason</button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Reason</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="entry-exit-list">
+                                        <!-- Entry/exit reasons will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="charts-container">
+                                <div class="chart-card">
+                                    <h3>Entry Reasons Analysis</h3>
+                                    <div class="chart-placeholder">
+                                        <canvas id="entry-reasons-chart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="chart-card">
+                                    <h3>Exit Reasons Analysis</h3>
+                                    <div class="chart-placeholder">
+                                        <canvas id="exit-reasons-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Setup Type/Strategy Tab -->
+                        <div class="tab-content" id="setup-tab">
+                            <div class="section-header">
+                                <h3>Setup Type/Strategy</h3>
+                                <button class="button-primary" id="add-setup-button">Add Setup Type</button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Setup Name</th>
+                                            <th>Success Rate</th>
+                                            <th>Number of Trades</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="setup-list">
+                                        <!-- Setup types will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="chart-card">
+                                <h3>Setup Type Performance</h3>
+                                <div class="chart-placeholder">
+                                    <canvas id="setup-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mistakes Tab -->
+                        <div class="tab-content" id="mistakes-tab">
+                            <div class="section-header">
+                                <h3>Mistakes Analysis</h3>
+                                <button class="button-primary" id="add-mistake-button">Add Mistake Record</button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Trade</th>
+                                            <th>Date</th>
+                                            <th>Mistake Made?</th>
+                                            <th>Notes</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mistakes-list">
+                                        <!-- Mistakes will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="chart-card">
+                                <h3>Mistakes Distribution</h3>
+                                <div class="chart-placeholder">
+                                    <canvas id="mistakes-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Market Condition Tab -->
+                        <div class="tab-content" id="market-condition-tab">
+                            <div class="section-header">
+                                <h3>Market Condition Analysis</h3>
+                            </div>
+                            <div class="chart-card">
+                                <h3>Performance by Market Condition</h3>
+                                <div class="chart-placeholder">
+                                    <canvas id="market-condition-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Market Condition</th>
+                                            <th>Win Rate</th>
+                                            <th>Average P/L</th>
+                                            <th>Number of Trades</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Volatile</td>
+                                            <td>62%</td>
+                                            <td class="positive">+8.3%</td>
+                                            <td>25</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Range Bound</td>
+                                            <td>58%</td>
+                                            <td class="positive">+4.2%</td>
+                                            <td>32</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Trending</td>
+                                            <td>75%</td>
+                                            <td class="positive">+12.7%</td>
+                                            <td>40</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Crypto Section -->
+            <section id="crypto" class="content-section">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        Filters: <span class="filter-badge" id="crypto-filter-count">0</span>
+                    </div>
+                    <div class="filter-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="descriptive">Descriptive</button>
+                            <button class="tab-button" data-tab="technical">Technical</button>
+                        </div>
+                        <div class="tab-content active" id="descriptive-tab">
+                            <div class="filter-grid">
+                                <div class="filter-item">
+                                    <label for="crypto-exchange">Exchange</label>
+                                    <select id="crypto-exchange">
+                                        <option value="any">Any</option>
+                                        <option value="coinbase">Coinbase</option>
+                                        <option value="binance">Binance</option>
+                                        <option value="bitmart">BitMart</option>
+                                        <option value="htx">HTX</option>
+                                        <option value="mcxc">MCXC</option>
+                                        <option value="kucoin">KuCoin</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="crypto-price">Price</label>
+                                    <select id="crypto-price">
+                                        <option value="any">Any</option>
+                                        <option value="under_1">Under $1</option>
+                                        <option value="1_10">$1-$10</option>
+                                        <option value="10_100">$10-$100</option>
+                                        <option value="100_1000">$100-$1,000</option>
+                                        <option value="over_1000">Over $1,000</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="crypto-country">Country</label>
+                                    <select id="crypto-country">
+                                        <option value="any">Any</option>
+                                        <option value="global">Global</option>
+                                        <option value="usa">USA</option>
+                                        <option value="europe">Europe</option>
+                                        <option value="asia">Asia</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="crypto-volume">24H Volume</label>
+                                    <select id="crypto-volume">
+                                        <option value="any">Any</option>
+                                        <option value="over_50m">Over $50M</option>
+                                        <option value="over_1m">Over $1M</option>
+                                        <option value="over_5m">Over $5M</option>
+                                        <option value="volume_spike">Volume Spike (24H = 7 Day Avg)</option>
+                                        <option value="volume_2x">24H Volume greater than 2x 7-day average</option>
+                                        <option value="volume_3x">24H Volume greater than 3x 7-day average</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="crypto-market-cap">Market Cap</label>
+                                    <select id="crypto-market-cap">
+                                        <option value="any">Any</option>
+                                        <option value="over_1m">Over $1M</option>
+                                        <option value="over_10m">Over $10M</option>
+                                        <option value="over_20m">Over $20M</option>
+                                        <option value="over_50m">Over $50M</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="technical-tab">
+                            <div class="filter-grid">
+                                <div class="filter-item">
+                                    <label for="crypto-sma">Simple Moving Average</label>
+                                    <select id="crypto-sma">
+                                        <option value="any">Any</option>
+                                        <option value="price_above_sma20">Price above 20 SMA</option>
+                                        <option value="price_above_sma50">Price above 50 SMA</option>
+                                        <option value="price_above_sma200">Price above 200 SMA</option>
+                                        <option value="price_below_sma20">Price below 20 SMA</option>
+                                        <option value="price_below_sma50">Price below 50 SMA</option>
+                                        <option value="price_below_sma200">Price below 200 SMA</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="crypto-rsi">RSI</label>
+                                    <select id="crypto-rsi">
+                                        <option value="any">Any</option>
+                                        <option value="overbought">Overbought (greater than 70)</option>
+                                        <option value="oversold">Oversold (less than 30)</option>
+                                        <option value="over_50">Over 50</option>
+                                        <option value="under_50">Under 50</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="crypto-wave-trend">Wave Trend</label>
+                                    <select id="crypto-wave-trend">
+                                        <option value="any">Any</option>
+                                        <option value="lt_53">Wavetrend less than -53</option>
+                                        <option value="gt_60">Wavetrend greater than 60</option>
+                                        <option value="bounce_0">Bounce at 0 Line</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="button-outline" id="reset-crypto-filters">Reset (0)</button>
+                        <button class="button-primary" id="apply-crypto-filters">Apply Filters</button>
+                    </div>
+                </div>
+
+                <div id="crypto-results" class="results-section"></div>
+            </section>
+
+            <!-- Stocks Section -->
+            <section id="stocks" class="content-section active">
+                <div class="filter-card">
+                    <div class="filter-header">
+                        Filters: <span class="filter-badge" id="stocks-filter-count">0</span>
+                    </div>
+                    <div class="filter-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="descriptive">Descriptive</button>
+                            <button class="tab-button" data-tab="technical">Technical</button>
+                            <button class="tab-button" data-tab="fundamental">Fundamental</button>
+                        </div>
+                        <div class="tab-content active" id="descriptive-tab">
+                            <div class="filter-grid">
+                                <div class="filter-item">
+                                    <label for="stocks-exchange">Exchange</label>
+                                    <select id="stocks-exchange">
+                                        <option value="any">Any</option>
+                                        <option value="nasdaq">NASDAQ</option>
+                                        <option value="nyse">NYSE</option>
+                                        <option value="amex">AMEX</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-price">Price</label>
+                                    <select id="stocks-price">
+                                        <option value="any">Any</option>
+                                        <option value="under_1">Under $1</option>
+                                        <option value="1_5">$1-$5</option>
+                                        <option value="5_10">$5-$10</option>
+                                        <option value="10_20">$10-$20</option>
+                                        <option value="20_50">$20-$50</option>
+                                        <option value="50_100">$50-$100</option>
+                                        <option value="over_100">Over $100</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-country">Country</label>
+                                    <select id="stocks-country">
+                                        <option value="any">Any</option>
+                                        <option value="usa">USA</option>
+                                        <option value="china">China</option>
+                                        <option value="canada">Canada</option>
+                                        <option value="uk">UK</option>
+                                        <option value="japan">Japan</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-avg-volume">Average Volume</label>
+                                    <select id="stocks-avg-volume">
+                                        <option value="any">Any</option>
+                                        <option value="over_500k">Over 500K</option>
+                                        <option value="over_1m">Over 1M</option>
+                                        <option value="over_10m">Over 10M</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-current-volume">Current Volume</label>
+                                    <select id="stocks-current-volume">
+                                        <option value="any">Any</option>
+                                        <option value="over_500k">Over 500K</option>
+                                        <option value="over_1m">Over 1M</option>
+                                        <option value="over_10m">Over 10M</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="technical-tab">
+                            <div class="filter-grid">
+                                <div class="filter-item">
+                                    <label for="stocks-sma">Simple Moving Average</label>
+                                    <select id="stocks-sma">
+                                        <option value="any">Any</option>
+                                        <option value="price_above_sma20">Price above 20 SMA</option>
+                                        <option value="price_above_sma50">Price above 50 SMA</option>
+                                        <option value="price_above_sma200">Price above 200 SMA</option>
+                                        <option value="price_below_sma20">Price below 20 SMA</option>
+                                        <option value="price_below_sma50">Price below 50 SMA</option>
+                                        <option value="price_below_sma200">Price below 200 SMA</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-rsi">RSI</label>
+                                    <select id="stocks-rsi">
+                                        <option value="any">Any</option>
+                                        <option value="overbought">Overbought (greater than 70)</option>
+                                        <option value="oversold">Oversold (less than 30)</option>
+                                        <option value="over_50">Over 50</option>
+                                        <option value="under_50">Under 50</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="fundamental-tab">
+                            <div class="filter-grid">
+                                <div class="filter-item">
+                                    <label for="stocks-eps">EPS next 5 years</label>
+                                    <select id="stocks-eps">
+                                        <option value="any">Any</option>
+                                        <option value="over_10">Over 10%</option>
+                                        <option value="over_1">Over 1%</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-roe">Return on Equity (ROE)</label>
+                                    <select id="stocks-roe">
+                                        <option value="any">Any</option>
+                                        <option value="over_15">Over 15%</option>
+                                        <option value="over_10">Over 10%</option>
+                                        <option value="over_5">Over 5%</option>
+                                    </select>
+                                </div>
+                                <div class="filter-item">
+                                    <label for="stocks-profit-margin">Net Profit Margin</label>
+                                    <select id="stocks-profit-margin">
+                                        <option value="any">Any</option>
+                                        <option value="positive">Positive</option>
+                                        <option value="over_5">Over 5%</option>
+                                        <option value="over_10">Over 10%</option>
+                                        <option value="over_15">Over 15%</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="button-outline" id="reset-stocks-filters">Reset (0)</button>
+                        <button class="button-primary" id="apply-stocks-filters">Apply Filters</button>
+                    </div>
+                </div>
+
+                <div id="stocks-results" class="results-section">
+                    <div class="results-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="results">Results</button>
+                            <button class="tab-button" data-tab="charts">Charts</button>
+                            <button class="tab-button" data-tab="heatmap">Heatmap</button>
+                        </div>
+                        <div class="tab-content active" id="results-tab">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Ticker <i class="fas fa-sort"></i></th>
+                                            <th>Name <i class="fas fa-sort"></i></th>
+                                            <th>Sector <i class="fas fa-sort"></i></th>
+                                            <th>Industry <i class="fas fa-sort"></i></th>
+                                            <th>Country <i class="fas fa-sort"></i></th>
+                                            <th class="text-right">Market Cap <i class="fas fa-sort"></i></th>
+                                            <th class="text-right">P/E <i class="fas fa-sort"></i></th>
+                                            <th class="text-right">Price <i class="fas fa-sort"></i></th>
+                                            <th class="text-right">Change <i class="fas fa-sort"></i></th>
+                                            <th class="text-right">Volume <i class="fas fa-sort"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="clickable-row" data-asset-id="1">
+                                            <td><a href="#" class="asset-link">AAPL</a></td>
+                                            <td>Apple Inc.</td>
+                                            <td>Technology</td>
+                                            <td>Consumer Electronics</td>
+                                            <td>USA</td>
+                                            <td class="text-right">$2,950.00B</td>
+                                            <td class="text-right">31.2</td>
+                                            <td class="text-right">$187.32</td>
+                                            <td class="text-right positive">+1.25%</td>
+                                            <td class="text-right">58,900,000</td>
+                                        </tr>
+                                        <tr class="clickable-row" data-asset-id="2">
+                                            <td><a href="#" class="asset-link">MSFT</a></td>
+                                            <td>Microsoft Corporation</td>
+                                            <td>Technology</td>
+                                            <td>Software - Infrastructure</td>
+                                            <td>USA</td>
+                                            <td class="text-right">$3,000.00B</td>
+                                            <td class="text-right">34.8</td>
+                                            <td class="text-right">$403.78</td>
+                                            <td class="text-right positive">+0.87%</td>
+                                            <td class="text-right">22,100,000</td>
+                                        </tr>
+                                        <tr class="clickable-row" data-asset-id="3">
+                                            <td><a href="#" class="asset-link">GOOGL</a></td>
+                                            <td>Alphabet Inc.</td>
+                                            <td>Technology</td>
+                                            <td>Internet Content & Information</td>
+                                            <td>USA</td>
+                                            <td class="text-right">$1,790.00B</td>
+                                            <td class="text-right">24.5</td>
+                                            <td class="text-right">$142.56</td>
+                                            <td class="text-right negative">-0.32%</td>
+                                            <td class="text-right">20,500,000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="charts-tab">
+                            <div class="chart-view">
+                                <div class="chart-header">
+                                    <h3 id="chart-title">Select an asset</h3>
+                                    <div class="chart-controls">
+                                        <div class="chart-type-toggle">
+                                            <button class="chart-button active" data-chart-type="candle">Candle</button>
+                                            <button class="chart-button" data-chart-type="line">Line</button>
+                                            <button class="chart-button" data-chart-type="bar">Bar</button>
+                                        </div>
+                                        <div class="chart-period-toggle">
+                                            <button class="chart-button">1d</button>
+                                            <button class="chart-button">1w</button>
+                                            <button class="chart-button active">1m</button>
+                                            <button class="chart-button">3m</button>
+                                            <button class="chart-button">1y</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chart-container extra-large-chart" id="asset-chart-container">
+                                    <div class="chart-placeholder" id="chart-placeholder">
+                                        Select an asset from the results table to view chart
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="heatmap-tab">
+                            <div class="heatmap-container">
+                                <div class="heatmap-header">
+                                    <h3>Market Heatmap</h3>
+                                    <div class="heatmap-filters">
+                                        <button class="button-outline active">All</button>
+                                        <button class="button-outline">Technology</button>
+                                        <button class="button-outline">Financial</button>
+                                        <button class="button-outline">Healthcare</button>
+                                        <button class="button-outline">Consumer</button>
+                                        <button class="button-outline">Energy</button>
+                                    </div>
+                                </div>
+                                <div class="heatmap-grid" id="heatmap-grid">
+                                    <!-- Heatmap items will be generated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Account Section -->
+            <section id="account" class="content-section">
+                <!-- Login/Signup Section (shown when not logged in) -->
+                <div id="auth-container" class="auth-container">
+                    <div class="auth-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="login">Login</button>
+                            <button class="tab-button" data-tab="signup">Sign Up</button>
+                        </div>
+                        <div class="tab-content active" id="login-tab">
+                            <form id="login-form" class="auth-form">
+                                <div class="form-group">
+                                    <label for="login-email">Email</label>
+                                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="login-password">Password</label>
+                                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                                </div>
+                                <div class="form-group">
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="remember-me">
+                                        <label for="remember-me">Remember me</label>
+                                    </div>
+                                    <a href="#" class="forgot-password">Forgot password?</a>
+                                </div>
+                                <button type="submit" class="button-primary full-width">Login</button>
+                                <div class="social-login">
+                                    <p>Or login with</p>
+                                    <div class="social-buttons">
+                                        <button type="button" class="social-button google">
+                                            <i class="fab fa-google"></i> Google
+                                        </button>
+                                        <button type="button" class="social-button apple">
+                                            <i class="fab fa-apple"></i> Apple
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-content" id="signup-tab">
+                            <form id="signup-form" class="auth-form">
+                                <div class="form-group">
+                                    <label for="signup-name">Full Name</label>
+                                    <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="signup-email">Email</label>
+                                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="signup-password">Password</label>
+                                    <input type="password" id="signup-password" placeholder="Create a password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="signup-confirm-password">Confirm Password</label>
+                                    <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                                </div>
+                                <div class="form-group">
+                                    <div class="checkbox-container">
+                                        <input type="checkbox" id="terms" required>
+                                        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="button-primary full-width">Create Account</button>
+                                <div class="social-login">
+                                    <p>Or sign up with</p>
+                                    <div class="social-buttons">
+                                        <button type="button" class="social-button google">
+                                            <i class="fab fa-google"></i> Google
+                                        </button>
+                                        <button type="button" class="social-button apple">
+                                            <i class="fab fa-apple"></i> Apple
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Dashboard (shown when logged in) -->
+                <div id="account-dashboard" class="account-card" style="display: none;">
+                    <div class="account-header">
+                        <h2>Your Account</h2>
+                    </div>
+                    <div class="account-tabs">
+                        <div class="tab-buttons">
+                            <button class="tab-button active" data-tab="watchlist">Watchlist</button>
+                            <button class="tab-button" data-tab="current-trades">Current Trades</button>
+                            <button class="tab-button" data-tab="trade-history">Trade History</button>
+                            <button class="tab-button" data-tab="alerts">Alerts</button>
+                            <button class="tab-button" data-tab="settings">Settings</button>
+                        </div>
+                        <div class="tab-content active" id="watchlist-tab">
+                            <div class="section-header">
+                                <h3>Your Watchlist</h3>
+                                <select id="watchlist-asset-type">
+                                    <option value="stocks">Stocks</option>
+                                    <option value="crypto">Crypto</option>
+                                </select>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Ticker</th>
+                                            <th>Name</th>
+                                            <th>Price</th>
+                                            <th>Change</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AAPL</td>
+                                            <td>Apple Inc.</td>
+                                            <td>$187.32</td>
+                                            <td class="positive">+1.25%</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button watchlist-action" data-action="chart"><i class="fas fa-chart-line"></i></button>
+                                                    <button class="icon-button watchlist-action" data-action="remove"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>MSFT</td>
+                                            <td>Microsoft Corporation</td>
+                                            <td>$403.78</td>
+                                            <td class="positive">+0.87%</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button watchlist-action" data-action="chart"><i class="fas fa-chart-line"></i></button>
+                                                    <button class="icon-button watchlist-action" data-action="remove"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>TSLA</td>
+                                            <td>Tesla, Inc.</td>
+                                            <td>$175.34</td>
+                                            <td class="negative">-2.15%</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button watchlist-action" data-action="chart"><i class="fas fa-chart-line"></i></button>
+                                                    <button class="icon-button watchlist-action" data-action="remove"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="current-trades-tab">
+                            <div class="section-header">
+                                <h3>Current Trades</h3>
+                                <button class="button-primary" id="add-trade-button">Add Trade</button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Ticker</th>
+                                            <th>Type</th>
+                                            <th>Entry Date</th>
+                                            <th>Entry Price</th>
+                                            <th>Current Price</th>
+                                            <th>P/L</th>
+                                            <th>Stop Loss</th>
+                                            <th>Take Profit</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="current-trades-list">
+                                        <tr>
+                                            <td>NVDA</td>
+                                            <td>Long</td>
+                                            <td>2023-05-01</td>
+                                            <td>$875.23</td>
+                                            <td>$950.45</td>
+                                            <td class="positive">+8.6%</td>
+                                            <td>$850.00</td>
+                                            <td>$1,000.00</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button trade-action" data-action="edit"><i class="fas fa-edit"></i></button>
+                                                    <button class="icon-button trade-action" data-action="close"><i class="fas fa-check-circle"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>META</td>
+                                            <td>Long</td>
+                                            <td>2023-05-05</td>
+                                            <td>$450.12</td>
+                                            <td>$475.34</td>
+                                            <td class="positive">+5.6%</td>
+                                            <td>$435.00</td>
+                                            <td>$500.00</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button trade-action" data-action="edit"><i class="fas fa-edit"></i></button>
+                                                    <button class="icon-button trade-action" data-action="close"><i class="fas fa-check-circle"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="trade-history-tab">
+                            <div class="section-header">
+                                <h3>Trade History</h3>
+                                <select id="trade-history-period">
+                                    <option value="all">All Time</option>
+                                    <option value="ytd">Year to Date</option>
+                                    <option value="1m">Last Month</option>
+                                    <option value="3m">Last 3 Months</option>
+                                </select>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Ticker</th>
+                                            <th>Type</th>
+                                            <th>Entry Date</th>
+                                            <th>Exit Date</th>
+                                            <th>Entry Price</th>
+                                            <th>Exit Price</th>
+                                            <th>P/L</th>
+                                            <th>Hold Time</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="trade-history-list">
+                                        <tr>
+                                            <td>AAPL</td>
+                                            <td>Long</td>
+                                            <td>2023-04-15</td>
+                                            <td>2023-04-20</td>
+                                            <td>$165.23</td>
+                                            <td>$178.45</td>
+                                            <td class="positive">+8.0%</td>
+                                            <td>5 days</td>
+                                            <td>Earnings beat</td>
+                                        </tr>
+                                        <tr>
+                                            <td>MSFT</td>
+                                            <td>Long</td>
+                                            <td>2023-04-10</td>
+                                            <td>2023-04-12</td>
+                                            <td>$285.76</td>
+                                            <td>$290.12</td>
+                                            <td class="positive">+1.5%</td>
+                                            <td>2 days</td>
+                                            <td>Sector rotation</td>
+                                        </tr>
+                                        <tr>
+                                            <td>TSLA</td>
+                                            <td>Short</td>
+                                            <td>2023-04-05</td>
+                                            <td>2023-04-08</td>
+                                            <td>$195.30</td>
+                                            <td>$180.54</td>
+                                            <td class="positive">+7.6%</td>
+                                            <td>3 days</td>
+                                            <td>Overbought</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="alerts-tab">
+                            <div class="section-header">
+                                <h3>Price Alerts</h3>
+                                <button class="button-primary" id="new-alert-button">New Alert</button>
+                            </div>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Ticker</th>
+                                            <th>Condition</th>
+                                            <th>Created</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="alerts-list">
+                                        <tr>
+                                            <td>AAPL</td>
+                                            <td>rises above $200</td>
+                                            <td>2023-05-01</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button alert-action" data-action="edit"><i class="fas fa-edit"></i></button>
+                                                    <button class="icon-button alert-action" data-action="remove"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>MSFT</td>
+                                            <td>falls below $380</td>
+                                            <td>2023-05-05</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="icon-button alert-action" data-action="edit"><i class="fas fa-edit"></i></button>
+                                                    <button class="icon-button alert-action" data-action="remove"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="settings-tab">
+                            <div class="section-header">
+                                <h3>Account Settings</h3>
+                            </div>
+                            <div class="settings-form">
+                                <div class="form-group">
+                                    <label for="user-name">Name</label>
+                                    <input type="text" id="user-name" value="John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-email">Email</label>
+                                    <input type="email" id="user-email" value="john.doe@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="default-broker">Default Broker</label>
+                                    <select id="default-broker">
+                                        <option value="none">None</option>
+                                        <option value="m1finance">M1 Finance</option>
+                                        <option value="robinhood" selected>Robinhood</option>
+                                        <option value="webull">Webull</option>
+                                        <option value="coinbase">Coinbase (Crypto)</option>
+                                        <option value="binance">Binance (Crypto)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="default-asset-type">Default Asset Type</label>
+                                    <select id="default-asset-type">
+                                        <option value="stocks" selected>Stocks</option>
+                                        <option value="crypto">Crypto</option>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="button-primary" id="save-settings-button">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal" id="notification-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notifications</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="notification-list">
+                    <div class="notification-item">
+                        <div class="notification-icon"><i class="fas fa-bell"></i></div>
+                        <div class="notification-content">
+                            <div class="notification-title">Price Alert: BTC</div>
+                            <div class="notification-message">Bitcoin has reached your target price of $70,000</div>
+                            <div class="notification-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="notification-content">
+                            <div class="notification-title">Technical Alert: AAPL</div>
+                            <div class="notification-message">RSI has dropped below 30</div>
+                            <div class="notification-time">Yesterday</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="notification-content">
+                            <div class="notification-title">Market Update</div>
+                            <div class="notification-message">S&P 500 has dropped more than 1% today</div>
+                            <div class="notification-time">2 days ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Broker Connection Modal -->
+    <div class="modal" id="broker-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Connect Broker</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="broker-api-key">API Key</label>
+                    <input type="text" id="broker-api-key" placeholder="Enter your API key">
+                </div>
+                <div class="form-group">
+                    <label for="broker-api-secret">API Secret</label>
+                    <input type="password" id="broker-api-secret" placeholder="Enter your API secret">
+                </div>
+                <div class="form-actions">
+                    <button class="button-outline" id="cancel-broker-connect">Cancel</button>
+                    <button class="button-primary" id="confirm-broker-connect">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div class="modal" id="alert-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create Price Alert</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="alert-form">
+                    <div class="form-group">
+                        <label for="alert-ticker">Ticker Symbol</label>
+                        <input type="text" id="alert-ticker" placeholder="e.g. AAPL" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alert-condition">Condition</label>
+                        <select id="alert-condition" required>
+                            <option value="above">Price rises above</option>
+                            <option value="below">Price falls below</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alert-price">Price ($)</label>
+                        <input type="number" id="alert-price" step="0.01" min="0" placeholder="Enter price" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-alert">Cancel</button>
+                        <button type="submit" class="button-primary">Create Alert</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Trade Modal -->
+    <div class="modal" id="trade-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="trade-modal-title">Add New Trade</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="trade-form">
+                    <input type="hidden" id="trade-id" value="">
+                    <div class="form-group">
+                        <label for="trade-ticker">Ticker Symbol</label>
+                        <input type="text" id="trade-ticker" placeholder="e.g. AAPL" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-type">Trade Type</label>
+                        <select id="trade-type" required>
+                            <option value="long">Long</option>
+                            <option value="short">Short</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-entry-date">Entry Date</label>
+                        <input type="date" id="trade-entry-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-entry-price">Entry Price ($)</label>
+                        <input type="number" id="trade-entry-price" step="0.01" min="0" placeholder="Enter price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-stop-loss">Stop Loss ($)</label>
+                        <input type="number" id="trade-stop-loss" step="0.01" min="0" placeholder="Enter stop loss">
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-take-profit">Take Profit ($)</label>
+                        <input type="number" id="trade-take-profit" step="0.01" min="0" placeholder="Enter take profit">
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-notes">Notes</label>
+                        <textarea id="trade-notes" rows="3" placeholder="Add notes about this trade"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-trade">Cancel</button>
+                        <button type="submit" class="button-primary">Save Trade</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Close Trade Modal -->
+    <div class="modal" id="close-trade-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Close Trade</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="close-trade-form">
+                    <input type="hidden" id="close-trade-id" value="">
+                    <div class="form-group">
+                        <label for="close-trade-ticker">Ticker</label>
+                        <input type="text" id="close-trade-ticker" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="close-trade-exit-date">Exit Date</label>
+                        <input type="date" id="close-trade-exit-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="close-trade-exit-price">Exit Price ($)</label>
+                        <input type="number" id="close-trade-exit-price" step="0.01" min="0" placeholder="Enter exit price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="close-trade-notes">Notes</label>
+                        <textarea id="close-trade-notes" rows="3" placeholder="Add notes about this trade"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-close-trade">Cancel</button>
+                        <button type="submit" class="button-primary">Close Trade</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Entry/Exit Reason Modal -->
+    <div class="modal" id="entry-exit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Entry/Exit Reason</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="entry-exit-form">
+                    <div class="form-group">
+                        <label for="entry-exit-type">Type</label>
+                        <select id="entry-exit-type" required>
+                            <option value="Entry">Entry</option>
+                            <option value="Exit">Exit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="entry-exit-reason">Reason</label>
+                        <textarea id="entry-exit-reason" rows="3" placeholder="Describe your entry or exit reason" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="entry-exit-date">Date</label>
+                        <input type="date" id="entry-exit-date" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-entry-exit">Cancel</button>
+                        <button type="submit" class="button-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Type Modal -->
+    <div class="modal" id="setup-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Setup Type/Strategy</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="setup-form">
+                    <div class="form-group">
+                        <label for="setup-name">Setup Name</label>
+                        <input type="text" id="setup-name" placeholder="e.g. Moving Average Crossover" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="setup-success">Success Rate (%)</label>
+                        <input type="number" id="setup-success" min="0" max="100" placeholder="e.g. 75" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="setup-trades">Number of Trades</label>
+                        <input type="number" id="setup-trades" min="1" placeholder="e.g. 15" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-setup">Cancel</button>
+                        <button type="submit" class="button-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mistakes Modal -->
+    <div class="modal" id="mistake-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Mistake Record</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="mistake-form">
+                    <div class="form-group">
+                        <label for="mistake-trade">Trade</label>
+                        <input type="text" id="mistake-trade" placeholder="e.g. AAPL Long" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mistake-date">Date</label>
+                        <input type="date" id="mistake-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mistake-made">Mistake Made?</label>
+                        <select id="mistake-made" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="mistake-notes">Notes</label>
+                        <textarea id="mistake-notes" rows="3" placeholder="Describe the mistake or what went well"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-mistake">Cancel</button>
+                        <button type="submit" class="button-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Condition Modal -->
+    <div class="modal" id="market-condition-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Market Condition</h3>
+                <button class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="market-condition-form">
+                    <div class="form-group">
+                        <label for="market-condition-type">Market Condition</label>
+                        <select id="market-condition-type" required>
+                            <option value="Volatile">Volatile</option>
+                            <option value="Range Bound">Range Bound</option>
+                            <option value="Trending">Trending</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="market-condition-date">Date</label>
+                        <input type="date" id="market-condition-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="market-condition-notes">Notes</label>
+                        <textarea id="market-condition-notes" rows="3" placeholder="Add notes about the market condition"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="button-outline" id="cancel-market-condition">Cancel</button>
+                        <button type="submit" class="button-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TradingView Widget Script -->
+    <script src="https://s3.tradingview.com/tv.js"></script>
+    <script src="./scripts.js"></script>
+</body>
+</html>
